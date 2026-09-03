@@ -1,46 +1,113 @@
-# AI Risk Management Project
-
-Purpose
-- Establish an operational program to manage risks from AI/ML systems.
-
-What's included
-- templates/ : CSV/MD templates for inventory and risk register
-- docs/ : policies and checklists
-- tools/ : small scripts to help generate an inventory and run simple checks
-
-How to get started
-1. Populate templates/model_inventory.csv with known models.
-2. Run tools/model_inventory.py to produce JSON summary.
-3. Conduct assessments using templates/assessment_template.md and add findings to templates/risk_register.csv.
-4. Implement monitoring for pilot models and iterate.
-
-Contacts
-- Program Sponsor: [name@example.com]
-- Project Lead: [name@example.com]
-- model_id,model_name,owner,version,training_dataset,dataset_version,purpose,production_endpoint,model_type,notes
-# Example row:
-# m-001,credit-risk-v1,jane.doe,1.0,credit_data_2025,v1.2,credit scoring,/api/models/credit-risk,sklearn-xgboost,used for loan approvals
-risk_id,model_id,risk_category,description,likelihood(1-5),impact(1-5),score,priority,mitigation,owner,status,created_at,review_date
-# Example row:
-# r-001,m-001,Fairness,Model produces disparate false negative rate for group B,4,5,20,High,Re-train with balanced data; fairness constraints,jane.doe,Open,2026-09-03,2026-09-17
-#!/usr/bin/env python3
-# Minimal script: read model inventory CSV and print JSON summary
-import csv, json, sys
-from pathlib import Path
-
-def load_inventory(path):
-    out = []
-    with open(path, newline='') as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            if not row.get('model_id'): continue
-            out.append(row)
-    return out
-
-if __name__ == '__main__':
-    path = Path('templates/model_inventory.csv')
-    if not path.exists():
-        print(f'Inventory not found at {path}. Populate templates/model_inventory.csv first.', file=sys.stderr)
-        sys.exit(1)
-    inv = load_inventory(path)
-    print(json.dumps(inv, indent=2))
+{
+  "system": "Customer Support Chatbot v2",
+  "summary": {
+    "system": "Customer Support Chatbot v2",
+    "total_risks": 5,
+    "by_severity": {
+      "Critical": 1,
+      "High": 2,
+      "Medium": 2,
+      "Low": 0
+    },
+    "unmitigated": 5
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Biased responses across demographic groups",
+      "description": "Model may give systematically different quality of support based on user name or dialect cues.",
+      "category": "Bias & Fairness",
+      "likelihood": "POSSIBLE",
+      "impact": "MAJOR",
+      "risk_score": 12,
+      "severity": "High",
+      "status": "Mitigating",
+      "owner": "ML Fairness Team",
+      "date_identified": "2026-09-03",
+      "mitigations": [
+        {
+          "description": "Run fairness audit across demographic slices",
+          "owner": "ML Fairness Team",
+          "due_date": "2026-10-01",
+          "completed": false
+        },
+        {
+          "description": "Add bias-detection eval to CI pipeline",
+          "owner": "MLOps",
+          "due_date": "2026-09-20",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "id": "RISK-002",
+      "title": "Prompt injection via user-uploaded documents",
+      "description": "Malicious instructions embedded in uploaded files could hijack the assistant's behavior.",
+      "category": "Security & Adversarial Robustness",
+      "likelihood": "LIKELY",
+      "impact": "SEVERE",
+      "risk_score": 20,
+      "severity": "Critical",
+      "status": "Mitigating",
+      "owner": "Security Team",
+      "date_identified": "2026-09-03",
+      "mitigations": [
+        {
+          "description": "Sandboxed content parsing + instruction filtering",
+          "owner": "Security Team",
+          "due_date": "2026-09-15",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "id": "RISK-003",
+      "title": "PII leakage in generated responses",
+      "description": "Model may inadvertently reproduce sensitive user data from earlier in a session or from training data.",
+      "category": "Privacy & Data Protection",
+      "likelihood": "UNLIKELY",
+      "impact": "MAJOR",
+      "risk_score": 8,
+      "severity": "Medium",
+      "status": "Assessed",
+      "owner": "Privacy Team",
+      "date_identified": "2026-09-03",
+      "mitigations": []
+    },
+    {
+      "id": "RISK-004",
+      "title": "Hallucinated policy information",
+      "description": "Chatbot may state incorrect return/refund policies, creating legal or customer trust exposure.",
+      "category": "Reliability & Robustness",
+      "likelihood": "LIKELY",
+      "impact": "MODERATE",
+      "risk_score": 12,
+      "severity": "High",
+      "status": "Mitigating",
+      "owner": "Product Team",
+      "date_identified": "2026-09-03",
+      "mitigations": [
+        {
+          "description": "Ground responses via RAG against verified policy docs",
+          "owner": "Product Team",
+          "due_date": "2026-09-25",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "id": "RISK-005",
+      "title": "Lack of human escalation path",
+      "description": "No reliable mechanism to hand off distressed or high-stakes users to a human agent.",
+      "category": "Human Oversight & Accountability",
+      "likelihood": "POSSIBLE",
+      "impact": "MODERATE",
+      "risk_score": 9,
+      "severity": "Medium",
+      "status": "Assessed",
+      "owner": "Product Team",
+      "date_identified": "2026-09-03",
+      "mitigations": []
+    }
+  ]
+}
